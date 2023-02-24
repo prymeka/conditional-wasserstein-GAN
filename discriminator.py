@@ -1,6 +1,5 @@
 import tensorflow as tf
-from keras import layers
-from keras import Model
+from keras import layers, Model
 
 from typing import Tuple
 
@@ -28,7 +27,6 @@ def get_discriminator_model(input_shape: Tuple[int, int, int], num_classes: int 
     x = layers.Embedding(num_classes, 50)(label_inp)
     x = layers.Dense(input_shape[0]*input_shape[1])(x)
     x = layers.Reshape((input_shape[0], input_shape[1], 1))(x)
-
     # image input
     image_inp = layers.Input(shape=input_shape)
     merged = layers.Concatenate()([image_inp, x])
