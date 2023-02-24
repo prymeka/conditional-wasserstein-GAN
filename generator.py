@@ -1,6 +1,5 @@
 import tensorflow as tf
-from keras import layers
-from keras import Model
+from keras import layers, Model
 
 from typing import Tuple
 
@@ -18,8 +17,7 @@ def upsample_block(
     drop_value: float = 0.3
 ) -> tf.Tensor:
     x = layers.UpSampling2D(up_size)(x)
-    x = layers.Conv2D(filters, kernel_size, strides,
-                      'same', use_bias=use_bias)(x)
+    x = layers.Conv2D(filters, kernel_size, strides, 'same', use_bias=use_bias)(x)
     if use_bn:
         x = layers.BatchNormalization()(x)
     if activation:
@@ -31,11 +29,12 @@ def upsample_block(
 
 
 def get_generator_model(latent_dim: int, num_classes: int = 10) -> Model:
+    # label input
     label_inp = layers.Input(shape=(1,))
     x = layers.Embedding(num_classes, 50)(label_inp)
     x = layers.Dense(8*8)(x)
     x = layers.Reshape((8, 8, 1))(x)
-
+    # latent vector input
     latent_inp = layers.Input(shape=(latent_dim,))
     y = layers.Dense(4*4*256, use_bias=False)(latent_inp)
     y = layers.BatchNormalization()(y)
