@@ -25,7 +25,6 @@ class GANMonitor(keras.callbacks.Callback):
         for i in range(self.num_imgs):
             img = generated_images[i].numpy()
             img = img_to_array(img)
-            # images will be saved as npy as converting to PIL.Image to save 
-            # as png was causing problems
+            # images will be saved as npy since converting to PIL.Image is causing problems
             with open(f'imgs/generated_img_{i}_epoch{epoch}.npy', 'wb') as f:
                 np.save(f, img)
