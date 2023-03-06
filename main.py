@@ -9,23 +9,17 @@ from discriminator import get_discriminator_model
 from generator import get_generator_model
 from wgan import ConditionalWGAN
 from callbacks import GANMonitor
+from utils import discriminator_loss, generator_loss
 
 
 def run(
-    epochs: int,
-    input_shape: Tuple[int, int, int],
-    noise_dim: int,
-    batch_size: int,
     train_images: np.ndarray,
-    train_labels: np.ndarray
+    train_labels: np.ndarray,
+    epochs: int,
+    batch_size: int,
+    noise_dim: int = 128,
+    input_shape: Tuple[int, int, int] = (28, 28, 3),
 ) -> None:
-    def discriminator_loss(real_img: tf.Tensor, fake_img: tf.Tensor) -> tf.Tensor:
-        real_loss = tf.reduce_mean(real_img)
-        fake_loss = tf.reduce_mean(fake_img)
-        return fake_loss - real_loss
-
-    def generator_loss(fake_img: tf.Tensor) -> tf.Tensor:
-        return -tf.reduce_mean(fake_img)
 
     generator_optimizer = Adam(
         learning_rate=0.0002, beta_1=0.5, beta_2=0.9
