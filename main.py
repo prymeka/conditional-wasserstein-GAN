@@ -1,5 +1,5 @@
 import tensorflow as tf
-import keras
+from tensorflow.keras.optimizers import Adam
 from keras.datasets import fashion_mnist
 import numpy as np
 
@@ -27,10 +27,10 @@ def run(
     def generator_loss(fake_img: tf.Tensor) -> tf.Tensor:
         return -tf.reduce_mean(fake_img)
 
-    generator_optimizer = keras.optimizer_v2.adam.Adam(
+    generator_optimizer = Adam(
         learning_rate=0.0002, beta_1=0.5, beta_2=0.9
     )
-    discriminator_optimizer = keras.optimizer_v2.adam.Adam(
+    discriminator_optimizer = Adam(
         learning_rate=0.0002, beta_1=0.5, beta_2=0.9
     )
 
@@ -61,10 +61,10 @@ if __name__ == '__main__':
     (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
     y_train = y_train.reshape((-1, 1))
     run(
-        epochs=2,
+        epochs=50,
         input_shape=(28, 28, 1),
         noise_dim=128,
-        batch_size=64,
+        batch_size=512,
         train_images=x_train,
         train_labels=y_train
     )
