@@ -1,7 +1,4 @@
 import tensorflow as tf
-from tensorflow.keras.optimizers import Adam
-from keras.datasets import fashion_mnist
-import numpy as np
 import argparse
 
 from typing import Optional, Tuple
@@ -32,9 +29,9 @@ parser.add_argument('-bs', '--batch-size', type=int,
                     required=False, help='Batch size.')
 parser.add_argument('-ie', '--initial-epoch', type=int, default=0,
                     help='Epoch number at which to start training (default: 0).')
-parser.add_argument('-dis', '--discriminator', type=str, default=None,
+parser.add_argument('-dis', '--discriminator-path', type=str, default=None,
                     help='Path to the discriminator model (default: None). It\'s not required when training a model from scratch.')
-parser.add_argument('-gen', '--generator', type=str, default=None,
+parser.add_argument('-gen', '--generator-path', type=str, default=None,
                     help='Path to the discriminator model (default: None). It\'s not required when training a model from scratch.')
 parser.add_argument('-n', '--noise-dim', type=int, required=False,
                     help='The dimension of the input, noise/latent vector to the generator model.')
@@ -47,8 +44,8 @@ def main(
     epochs: int,
     batch_size: int = 128,
     initial_epoch: int = None,
-    discriminator: Optional[tf.keras.models.Model] = None,
-    generator: Optional[tf.keras.models.Model] = None,
+    discriminator_path: Optional[str] = None,
+    generator_path: Optional[str] = None,
     noise_dim: int = 128,
     input_shape: Tuple[int, int, int] = None
 ) -> None:
@@ -56,11 +53,16 @@ def main(
     y_train = y_train.reshape((-1, 1))
     input_shape = input_shape if input_shape is not None else (
         28, 28, 3) if dataset != 'cifar' else (32, 32, 3)
+    discriminator = tf.keras.models.load_model(discriminator_path)
+    generator = tf.keras.models.load_model(generator_path)
     fit_wgan(
         train_images=x_train,
         train_labels=y_train,
         epochs=int(epochs),
         batch_size=int(batch_size),
+        initial_epoch=int(initial_epoch),
+        discriminator=discriminator,
+        generator=generator,
         noise_dim=int(noise_dim),
         input_shape=input_shape,
     )
@@ -68,6 +70,16 @@ def main(
 
 if __name__ == '__main__':
     args = parser.parse_args()
+    # args = {
+    #     'dataset': 'fmnist',
+    #     'epochs': '150',
+    #     'batch_size': 512,
+    #     'initial_epoch': 50,
+    #     'discriminator': './models/d_50epochs',
+    #     'generator': './models/g_50epochs',
+    #     'noise_dim': 128,
+    #     'input_shape': (28, 28, 3)
+    # }
     main(
         dataset=args.dataset,
         epochs=args.epochs,
