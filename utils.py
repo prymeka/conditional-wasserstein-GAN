@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.optimizers import Adam
 
 from discriminator import get_discriminator_model
 from generator import get_generator_model
