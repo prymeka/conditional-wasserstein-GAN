@@ -27,8 +27,6 @@ def load_dataset(name: Literal['mnist', 'fmnist', 'cifar']) -> Tuple[Tuple[np.nd
         'fmnist': tf.keras.datasets.fashion_mnist.load_data,
         'cifar': tf.keras.datasets.cifar10.load_data,
     }[name]()
-    y_train = to_categorical(y_train)
-    y_test = to_categorical(y_test)
 
     if name in ('mnist', 'fmnist'):
         x_train = np.repeat(x_train[..., np.newaxis], 3, -1)
@@ -87,9 +85,19 @@ def fit_wgan(
     discriminator: Optional[tf.keras.models.Model] = None,
     generator: Optional[tf.keras.models.Model] = None,
     noise_dim: int = 128,
-    input_shape: Tuple[int, int, int] = (28, 28, 3),
+    input_shape: Tuple[int, int, int] = (32, 32, 3),
 ) -> None:
-
+    """
+    Train the cWGAN.
+    """
+    discriminator = (
+        get_discriminator_model(input_shape)
+        if initial_epoch is not None else discriminator
+    )
+    generator = (
+        get_generator_model(noise_dim)
+        if initial_epoch is not None else generator
+    )
     generator_optimizer = Adam(
         learning_rate=0.0002, beta_1=0.5, beta_2=0.9
     )
@@ -100,14 +108,8 @@ def fit_wgan(
     cbk = GANMonitor(num_imgs=3, latent_dim=noise_dim)
     wgan = ConditionalWGAN(
         image_shape=input_shape,
-        discriminator=(
-            get_discriminator_model(input_shape)
-            if initial_epoch is not None else discriminator
-        ),
-        generator=(
-            get_generator_model(noise_dim)
-            if initial_epoch is not None else generator
-        ),
+        discriminator=discriminator,
+        generator=generator,
         latent_dim=noise_dim,
         discriminator_extra_steps=5,
     )
@@ -117,8 +119,15 @@ def fit_wgan(
         g_loss_fn=generator_loss,
         d_loss_fn=discriminator_loss,
     )
-    wgan.fit(train_images, train_labels, batch_size=batch_size,
-             epochs=epochs, initial_epoch=initial_epoch, callbacks=[cbk], verbose=1)
+    wgan.fit(
+        train_images,
+        train_labels,
+        batch_size=batch_size,
+        epochs=epochs,
+        initial_epoch=initial_epoch,
+        callbacks=[cbk],
+        verbose=1
+    )
 
     wgan.generator.save(f'models/g_{epochs}epochs')
     wgan.generator.save_weights(f'models/g_weights_{epochs}epochs')
