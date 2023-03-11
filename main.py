@@ -47,13 +47,13 @@ def main(
     discriminator_path: Optional[str] = None,
     generator_path: Optional[str] = None,
     noise_dim: int = 128,
-    input_shape: Tuple[int, int, int] = None
+    input_shape: Tuple[int, int, int] = (32, 32, 3)
 ) -> None:
     (x_train, y_train), (x_test, y_test), key = load_dataset(dataset)
-    input_shape = input_shape if input_shape is not None else (
-        28, 28, 3) if dataset != 'cifar' else (32, 32, 3)
-    discriminator = tf.keras.models.load_model(discriminator_path)
-    generator = tf.keras.models.load_model(generator_path)
+    discriminator = None if discriminator_path is None else tf.keras.models.load_model(
+        discriminator_path)
+    generator = None if generator_path is None else tf.keras.models.load_model(
+        generator_path)
     fit_wgan(
         train_images=x_train,
         train_labels=y_train,
@@ -81,12 +81,12 @@ if __name__ == '__main__':
     # )
     args = {
         'dataset': 'fmnist',
-        'epochs': '150',
+        'epochs': 150,
         'batch_size': 512,
         'initial_epoch': 50,
         'discriminator_path': './models/d_50epochs',
         'generator_path': './models/g_50epochs',
         'noise_dim': 128,
-        'input_shape': (28, 28, 3)
+        'input_shape': (32, 32, 3)
     }
     main(**args)

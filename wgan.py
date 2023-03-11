@@ -112,7 +112,8 @@ class ConditionalWGAN(Model):
 
         # training the generator
         latent_vector = tf.random.normal((batch_size, self.latent_dim))
-        fake_labels = tf.random.uniform((batch_size, 1), minval=0, maxval=10, dtype=tf.int32)
+        fake_labels = tf.random.uniform(
+            (batch_size, 1), minval=0, maxval=10, dtype=tf.int32)
         with tf.GradientTape() as tape:
             # generate fake images
             fake_images = self.generator(
