@@ -30,9 +30,8 @@ def get_discriminator_model(input_shape: Tuple[int, int, int], num_classes: int 
     # image input
     image_inp = layers.Input(shape=input_shape)
     merged = layers.Concatenate()([image_inp, x])
-    # zero pad the input to increase the input images size to (32, 32, 1)
-    y = layers.ZeroPadding2D((2, 2))(merged)
-    y = conv_block(y, 64, layers.LeakyReLU(0.2))
+    # merged
+    y = conv_block(merged, 64, layers.LeakyReLU(0.2))
     y = conv_block(y, 128, layers.LeakyReLU(0.2), use_dropout=True)
     y = conv_block(y, 256, layers.LeakyReLU(0.2), use_dropout=True)
     y = conv_block(y, 512, layers.LeakyReLU(0.2))
@@ -44,5 +43,5 @@ def get_discriminator_model(input_shape: Tuple[int, int, int], num_classes: int 
 
 
 if __name__ == '__main__':
-    d_model = get_discriminator_model((28, 28, 1))
+    d_model = get_discriminator_model((32, 32, 3))
     d_model.summary()
