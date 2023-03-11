@@ -17,7 +17,8 @@ def upsample_block(
     drop_value: float = 0.3
 ) -> tf.Tensor:
     x = layers.UpSampling2D(up_size)(x)
-    x = layers.Conv2D(filters, kernel_size, strides, 'same', use_bias=use_bias)(x)
+    x = layers.Conv2D(filters, kernel_size, strides,
+                      'same', use_bias=use_bias)(x)
     if use_bn:
         x = layers.BatchNormalization()(x)
     if activation:
@@ -44,9 +45,8 @@ def get_generator_model(latent_dim: int, num_classes: int = 10) -> Model:
     # y is right now (8, 8, 128)
     merge = layers.Concatenate()([y, x])
     y = upsample_block(merge, 64, layers.LeakyReLU(0.2))
-    y = upsample_block(y, 1, layers.Activation('tanh'))
-    # y is right now (32, 32, 1), hence we use Cropping2D
-    y = layers.Cropping2D((2, 2))(y)
+    y = upsample_block(y, 3, layers.Activation('tanh'))
+    # y is right now (32, 32, 3)
 
     return Model([latent_inp, label_inp], y, name='generator')
 
