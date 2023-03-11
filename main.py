@@ -50,7 +50,6 @@ def main(
     input_shape: Tuple[int, int, int] = None
 ) -> None:
     (x_train, y_train), (x_test, y_test), key = load_dataset(dataset)
-    y_train = y_train.reshape((-1, 1))
     input_shape = input_shape if input_shape is not None else (
         28, 28, 3) if dataset != 'cifar' else (32, 32, 3)
     discriminator = tf.keras.models.load_model(discriminator_path)
@@ -69,24 +68,25 @@ def main(
 
 
 if __name__ == '__main__':
-    args = parser.parse_args()
-    # args = {
-    #     'dataset': 'fmnist',
-    #     'epochs': '150',
-    #     'batch_size': 512,
-    #     'initial_epoch': 50,
-    #     'discriminator': './models/d_50epochs',
-    #     'generator': './models/g_50epochs',
-    #     'noise_dim': 128,
-    #     'input_shape': (28, 28, 3)
-    # }
-    main(
-        dataset=args.dataset,
-        epochs=args.epochs,
-        batch_size=args.batch_size,
-        initial_epoch=args.initial_epoch,
-        discriminator=args.discriminator,
-        generator=args.generator,
-        noise_dim=args.noise_dim,
-        input_shape=args.input_shape
-    )
+    # args = parser.parse_args()
+    # main(
+    #     dataset=args.dataset,
+    #     epochs=args.epochs,
+    #     batch_size=args.batch_size,
+    #     initial_epoch=args.initial_epoch,
+    #     discriminator=args.discriminator,
+    #     generator=args.generator,
+    #     noise_dim=args.noise_dim,
+    #     input_shape=args.input_shape
+    # )
+    args = {
+        'dataset': 'fmnist',
+        'epochs': '150',
+        'batch_size': 512,
+        'initial_epoch': 50,
+        'discriminator_path': './models/d_50epochs',
+        'generator_path': './models/g_50epochs',
+        'noise_dim': 128,
+        'input_shape': (28, 28, 3)
+    }
+    main(**args)
